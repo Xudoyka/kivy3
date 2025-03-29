@@ -26,8 +26,10 @@ jobs:
       - name: 📂 Ishchi katalogni tekshirish
         run: ls -la && pwd
 
-      - name: 🏗 APK yaratish
+      - name: 📂 Katalogni tekshirish va buildozer ishlatish
         run: |
+          cd kivy3  # Agar buildozer.spec shu katalogda bo‘lsa
+          ls -la  # Fayllarni tekshirish
           buildozer -v android debug
 
       - name: 📂 APK faylini yuklash
