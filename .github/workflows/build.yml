@@ -23,6 +23,17 @@ jobs:
           pip3 install cython==0.29.36
           pip3 install python-for-android==2024.1.21
 
+      - name: 📂 Katalogni tekshirish
+        run: |
+          pwd
+          ls -la
+          if [ ! -f buildozer.spec ]; then
+            echo "❌ buildozer.spec topilmadi!"
+            exit 1
+          else
+            echo "✅ buildozer.spec mavjud!"
+          fi
+
       - name: 🏗 APK yaratish
         run: |
           buildozer -v android debug
