@@ -31,10 +31,19 @@ jobs:
           pwd  # Joriy katalogni ko'rsatish
           ls -la  # Ichidagi fayllarni tekshirish
 
-      - name: 📂 Katalogni tekshirish va buildozer ishlatish
+      - name: 📂 Fayllarni tekshirish
         run: |
-          cd kivy3  # Agar buildozer.spec shu katalogda bo‘lsa
-          ls -la  # Fayllarni tekshirish
+          pwd  # Joriy katalogni tekshirish
+          ls -la  # Ichidagi fayllarni tekshirish
+          if [ ! -f buildozer.spec ]; then
+            echo "❌ buildozer.spec topilmadi!"
+            exit 1
+          else
+            echo "✅ buildozer.spec mavjud!"
+          fi
+
+      - name: 🚀 Buildozer orqali APK yaratish
+        run: |
           buildozer -v android debug
 
       - name: 📂 APK faylini yuklash
