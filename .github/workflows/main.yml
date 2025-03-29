@@ -23,6 +23,9 @@ jobs:
           pip3 install cython==0.29.36
           pip3 install python-for-android==2024.1.21
 
+      - name: 📂 Ishchi katalogni tekshirish
+        run: ls -la && pwd
+
       - name: 🏗 APK yaratish
         run: |
           buildozer -v android debug
