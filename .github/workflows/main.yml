@@ -1,0 +1,35 @@
+name: Build Kivy APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ Repository’ni yuklab olish
+        uses: actions/checkout@v4
+
+      - name: 🛠 Python va Buildozer’ni o‘rnatish
+        run: |
+          sudo apt update -y
+          sudo apt install -y python3 python3-pip openjdk-17-jdk
+          pip3 install --upgrade pip
+          pip3 install buildozer==1.5.0
+          pip3 install cython==0.29.36
+          pip3 install python-for-android==2024.1.21
+
+      - name: 🏗 APK yaratish
+        run: |
+          buildozer -v android debug
+
+      - name: 📂 APK faylini yuklash
+        uses: actions/upload-artifact@v4
+        with:
+          name: kivy-app-apk
+          path: bin/*.apk
+          if-no-files-found: error
