@@ -13,6 +13,9 @@ jobs:
           python-version: 3.8
           buildozer-cmd: buildozer -v android debug
 
+      - name: Check Ubuntu version
+        run: cat /etc/os-release
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
