@@ -20,37 +20,121 @@ jobs:
           sudo apt update -y
           sudo apt install -y python3-pip
           pip3 install --upgrade pip setuptools wheel
-          pip3 install buildozer==1.5.0 cython==0.29.36 virtualenv python-for-android==2024.1.21
+          pip3 install buildozer==1.5.0
+          pip3 install cython==0.29.36
+          pip3 install virtualenv
+          pip3 install python-for-android==2024.1.21
+      
 
       - name: 🧹 Buildozer keshini tozalash
-        run: rm -rf ~/.buildozer .buildozer
+        run: |
+          rm -rf ~/.buildozer
+          rm -rf ~/.buildozer/android/platform/android-sdk
+          rm -rf ~/.buildozer/android/platform/android-ndk
+          rm -rf ~/.buildozer/android/platform/apache-ant
+          rm -rf ~/.buildozer/android/platform/python-for-android
+          rm -rf ~/.buildozer/cache
+          rm -rf .buildozer
 
-      - name: ✅ Android SDK litsenziyalarini qabul qilish
+      - name: 📂 python-for-android katalogini yaratish
+        run: |
+          mkdir -p /home/runner/.buildozer/android/platform/python-for-android
+
+      - name: ✅ Android SDK va NDK ni sozlash
+        run: |
+          # ✅ SDK Root katalogini belgilash
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          #export PATH=$ANDROID_SDK_ROOT/cmdline-tools/7.0/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/cmdline-tools/7.0/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/build-tools/36.0.0:$PATH
+          echo "✅ PATH sozlandi: $PATH"
+      
+          # 🔍 SDK manager mavjudligini tekshirish
+          which sdkmanager || echo "❌ sdkmanager topilmadi!"
+          sdkmanager --version || echo "❌ sdkmanager versiyasi topilmadi!"
+      
+          # 🔍 SDK kataloglarini tekshirish
+          echo "🔍 SDK kataloglari:"
+          ls -la $ANDROID_SDK_ROOT || true
+          ls -la $ANDROID_SDK_ROOT/cmdline-tools || true
+          ls -la $ANDROID_SDK_ROOT/cmdline-tools/7.0/bin || true
+      
+          # 🔹 SDK manager yuklanganligini tekshirish
+          if [ ! -f "$ANDROID_SDK_ROOT/cmdline-tools/7.0/bin/sdkmanager" ]; then
+              echo "❌ sdkmanager topilmadi! Yuklab olinmoqda..."
+              
+              mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+              cd $ANDROID_SDK_ROOT/cmdline-tools
+      
+              # Eskirgan versiyani o‘chirish (agar mavjud bo‘lsa)
+              rm -rf 7.0
+              wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+              unzip -o cmdline-tools.zip
+              mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/7.0
+              mv cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/7.0/
+      
+              echo "✅ sdkmanager o‘rnatildi!"
+          fi
+      
+          # 🔹 PATH ni yangilash
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/7.0/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+          echo "✅ Yangilangan PATH: $PATH"
+      
+          # 🔹 SDK manager mavjudligini yana tekshirish
+          echo "🔹 SDK manager katalogi:"
+          ls -la $ANDROID_SDK_ROOT/cmdline-tools/7.0/bin || true
+          which sdkmanager || echo "❌ sdkmanager topilmadi!"
+          sdkmanager --version || echo "❌ sdkmanager versiyasi topilmadi!"
+      
+          # 🔹 SDK lisenziyalarini qabul qilish
+          #echo "🔹 SDK lisenziyalarini qabul qilish..."
+          #yes | sdkmanager --licenses || true
+      
+          # 🔹 SDK build-tools yuklash
+          #echo "🔹 build-tools yuklanmoqda..."
+          #sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.0" || true
+          #ls -la $ANDROID_SDK_ROOT/build-tools || true
+
+      - name: 🛠 Android SDK litsenziyalarini qabul qilish
         run: |
           mkdir -p $ANDROID_SDK_ROOT/licenses
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_SDK_ROOT/licenses/android-sdk-license
           echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license
           yes | sdkmanager --licenses || true
+          
+      - name: 🔍 Build-tools katalogini tekshirish
+        run: ls -la $ANDROID_SDK_ROOT/build-tools || true
 
       - name: 🛠 Build-tools’ni o‘rnatish
         run: |
           echo "🔹 build-tools yuklanmoqda..."
-          sdkmanager --install "build-tools;36.0.0" || sdkmanager --install "build-tools;33.0.2" || sdkmanager --install "build-tools;30.0.3"
+          sdkmanager --install "build-tools;36.0.0" || sdkmanager --install "build-tools;35.0.1"  # 🔹 Alternativ versiyani ham tekshirish
           ls -la $ANDROID_SDK_ROOT/build-tools || true
 
-      - name: 🔍 Aidl faylini topish va link yaratish
-        run: |
-          AIDL_PATH=$(find /usr/local/lib/android/sdk/build-tools -name "aidl" -type f | head -n 1)
-          if [[ -z "$AIDL_PATH" ]]; then
-            echo "❌ aidl fayli topilmadi!"
-            exit 1
-          fi
-          echo "✅ aidl fayli topildi: $AIDL_PATH"
-          sudo ln -sf "$AIDL_PATH" /usr/bin/aidl
-          sudo chmod +x /usr/bin/aidl
-          ls -la /usr/bin/aidl
+      - name: 🔍 Yangi build-tools katalogini tekshirish
+        run: ls -la $ANDROID_SDK_ROOT/build-tools || true
 
-      - name: 🔗 Buildozer yo‘llarini sozlash
+      - name: 🔍 Buildozer SDK yo‘lini tekshirish
+        run: ls -la /usr/local/lib/android/sdk
+
+      - name: 🔍 aidlni tekshirish
+        run: ls -la /usr/local/lib/android/sdk/build-tools/36.0.0/aidl
+        
+      - name: 🔍 Aidl faylini topish
+        run: |
+          find /usr/local/lib/android/sdk -name "aidl" -type f
+     
+
+      - name: 🔍 Buildozer versiyasini tekshirish
+        run: |
+          buildozer --version
+
+      - name: 🔗 Buildozer uchun aidl yo‘lini sozlash
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools
+          ln -sf /usr/local/lib/android/sdk/build-tools/36.0.0 ~/.buildozer/android/platform/android-sdk/build-tools/36.0.0
+          ls -la ~/.buildozer/android/platform/android-sdk/build-tools/36.0.0
+
+      - name: 🔗 ANDROID_SDK yo‘llarini sozlash
         run: |
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
@@ -58,10 +142,39 @@ jobs:
           echo "PATH=$ANDROID_SDK_ROOT/platform-tools:$PATH" >> $GITHUB_ENV
           echo "PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
 
+      - name: 🔍 aidl mavjudligini tekshirish
+        run: ls -la /home/runner/.buildozer/android/platform/android-sdk/build-tools/36.0.0
+
+      - name: ✅ Android SDK litsenziyalarini qabul qilish
+        run: #yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+              yes | $ANDROID_SDK_ROOT/cmdline-tools/7.0/bin/sdkmanager --licenses
+
+      - name: 🔍 Build-tools katalogini tekshirish
+        run: ls -la /usr/local/lib/android/sdk/build-tools/36.0.0/
+
+      - name: 🔗 aidl faylini /bin ga symlink qilish
+        run: |
+          sudo ln -sf /usr/local/lib/android/sdk/build-tools/36.0.0/aidl /usr/bin/aidl
+          ls -la /usr/bin/aidl
+
+      - name: ✅ aidl fayliga bajarish ruxsatlarini berish
+        run: |
+          sudo chmod +x /usr/local/lib/android/sdk/build-tools/36.0.0/aidl
+          sudo chmod +x /usr/bin/aidl
+          ls -la /usr/bin/aidl
+
+      #- name: 🔍 Buildozer xatolarini tekshirish
+        #run: cat .buildozer/android/platform/build.log || true
+      #- name: 🔍 Buildozer kataloglarini tekshirish
+        #run: |
+          #ls -la .buildozer || echo "❌ '.buildozer' katalogi topilmadi!"
+          #ls -la .buildozer/android || echo "❌ '.buildozer/android' katalogi topilmadi!"
+          #ls -la .buildozer/android/platform || echo "❌ '.buildozer/android/platform' katalogi topilmadi!"
+
       - name: 🔍 Buildozer aidl yo‘lini tekshirish
         run: |
           grep "aidl" .buildozer/android/platform/build.log || echo "❌ aidl log topilmadi!"
-
+      
       - name: 🛠 Buildozer boshlashdan oldin aidl ni tekshirish
         run: |
           if [ -f "$ANDROID_SDK_ROOT/build-tools/36.0.0/aidl" ]; then
@@ -73,16 +186,42 @@ jobs:
 
       - name: 🛠 aidl ishga tushishini tekshirish
         run: |
-          /usr/bin/aidl --help || echo "❌ aidl ishlamadi!"
+          /usr/local/lib/android/sdk/build-tools/36.0.0/aidl --help || echo "❌ aidl ishlamadi!"
+
+      #- name: 🔍 Buildozer batafsil loglarni chiqarish
+        #run: |
+          #buildozer -v android debug > buildozer_log.txt 2>&1
+          #cat buildozer_log.txt
+
       - name: 🛠  tekshirish
         run: |
           echo $ANDROID_HOME
           echo $ANDROID_SDK_ROOT
 
+      - name: 🛠  tekshirish
+        run: |
+          echo $ANDROID_SDK_ROOT
+          echo $PATH
+          which aidl
+
+
+      
       - name: 🧹 Buildozer’ni tozalash va qayta qurish
         run: |
+          rm -rf ~/.buildozer
           buildozer -v android debug
 
+      #- name: 📤 APK faylni saqlash
+        #uses: actions/upload-artifact@v4
+        #with:
+          #name: kivy-app-apk
+          #path: bin/*.apk
+      #- name: 🔧 Buildozer yo‘lini tekshirish
+        #run: |
+          #echo "Home directory: $HOME"
+          #echo "Current working directory: $(pwd)"
+          #ls -la
+                
       - name: 📤 APK faylini yuklash
         uses: actions/upload-artifact@v4
         with:
