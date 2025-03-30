@@ -57,14 +57,10 @@ runs:
           zlib1g-dev \
           libncurses5-dev \
           libncursesw5-dev \
-          libtinfo5 \
           cmake \
           libffi-dev \
-          libssl-dev
-        export PATH=$PATH:~/.local/bin/
-        python3 -m pip install --upgrade \
-          Cython==0.29.33 \
-          buildozer
+          libssl-dev \
+          libtinfo6  # ⬅️ libtinfo5 o‘rniga libtinfo6
       shell: bash
 
     - name: Install requirements in requirements.txt if it exists
