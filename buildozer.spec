@@ -33,3 +33,4 @@ android.archs = arm64-v8a, armeabi-v7a, x86, x86_64
 android.allow_backup = True
 android.debug_artifact = apk
 android.release_artifact = aab
+android.accept_sdk_license = True
