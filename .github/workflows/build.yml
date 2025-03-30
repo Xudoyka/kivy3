@@ -77,7 +77,6 @@ jobs:
 
       - name: 🧹 Buildozer’ni tozalash va qayta qurish
         run: |
-          buildozer android clean
           buildozer -v android debug
 
       - name: 📤 APK faylini yuklash
