@@ -141,9 +141,12 @@ jobs:
 
       - name: 🔗 Buildozer uchun aidl yo‘lini sozlash
         run: |
-          mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools
-          ln -sf /usr/local/lib/android/sdk/build-tools/36.0.0 ~/.buildozer/android/platform/android-sdk/build-tools/36.0.0
-          ls -la ~/.buildozer/android/platform/android-sdk/build-tools/36.0.0
+      - name: 🔗 Aidl faylini buildozer katalogiga nusxalash
+        run: |
+          mkdir -p /home/runner/.buildozer/android/platform/android-sdk/build-tools/36.0.0
+          cp -f /usr/local/lib/android/sdk/build-tools/36.0.0/aidl /home/runner/.buildozer/android/platform/android-sdk/build-tools/36.0.0/aidl
+          chmod +x /home/runner/.buildozer/android/platform/android-sdk/build-tools/36.0.0/aidl
+          echo "✅ Aidl nusxalandi va ruxsat berildi!"
 
       - name: 🔗 ANDROID_SDK yo‘llarini sozlash
         run: |
@@ -182,6 +185,7 @@ jobs:
       - name: 🔍 Buildozer aidl yo‘lini tekshirish
         run: |
           grep "aidl" .buildozer/android/platform/build.log || echo "❌ aidl log topilmadi!"
+          
       
       - name: 🛠 Buildozer boshlashdan oldin aidl ni tekshirish
         run: |
@@ -211,6 +215,9 @@ jobs:
           echo $ANDROID_SDK_ROOT
           echo $PATH
           which aidl
+      - name: 🔍 Aidl faylini topish
+        run: |
+          find /home/runner/.buildozer/android/platform/android-sdk/build-tools -name "aidl" -type f
 
 
       
