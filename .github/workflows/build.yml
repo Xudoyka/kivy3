@@ -94,15 +94,12 @@ jobs:
           #sdkmanager --install "platform-tools" "platforms;android-33" "build-tools;33.0.0" || true
           #ls -la $ANDROID_SDK_ROOT/build-tools || true
 
-      - name: 🛠 Android SDK litsenziyalarini qabul qilish
+      - name: ✅ Android SDK litsenziyalarini qabul qilish
         run: |
-          mkdir -p $ANDROID_SDK_ROOT/licenses
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_SDK_ROOT/licenses/android-sdk-license
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license
-          yes | sdkmanager --licenses || true
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/build-tools/36.0.0:$PATH
+          yes | sdkmanager --licenses
 
-          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/cmdline-tools/7.0/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/build-tools/36.0.0:$PATH
-          
       - name: 🔍 Build-tools katalogini tekshirish
         run: ls -la $ANDROID_SDK_ROOT/build-tools || true
 
@@ -130,6 +127,18 @@ jobs:
         run: |
           buildozer --version
 
+      - name: 🔍 Aidl faylini avtomatik topish
+        run: |
+          AIDL_PATH=$(find /usr/local/lib/android/sdk/build-tools -name "aidl" -type f | head -n 1)
+          if [ -f "$AIDL_PATH" ]; then
+            echo "✅ Aidl topildi: $AIDL_PATH"
+            sudo ln -sf "$AIDL_PATH" /usr/bin/aidl
+            sudo chmod +x /usr/bin/aidl
+          else
+            echo "❌ Aidl topilmadi! Build-tools noto‘g‘ri!"
+            exit 1
+          fi
+
       - name: 🔗 Buildozer uchun aidl yo‘lini sozlash
         run: |
           mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools
@@ -147,9 +156,6 @@ jobs:
       - name: 🔍 aidl mavjudligini tekshirish
         run: ls -la /home/runner/.buildozer/android/platform/android-sdk/build-tools/36.0.0
 
-      - name: ✅ Android SDK litsenziyalarini qabul qilish
-        run: #yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
-              yes | $ANDROID_SDK_ROOT/cmdline-tools/7.0/bin/sdkmanager --licenses
 
       - name: 🔍 Build-tools katalogini tekshirish
         run: ls -la /usr/local/lib/android/sdk/build-tools/36.0.0/
