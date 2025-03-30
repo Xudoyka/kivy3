@@ -1,7 +1,7 @@
 [app]
 #title = My Application
-title = MyApp
-package.name = myapp
+title = HavoPosboni
+package.name = HavoPosboni
 #package.domain = org.test
 package.domain = org.example
 source.dir = .
