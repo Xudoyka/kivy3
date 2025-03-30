@@ -109,6 +109,9 @@ jobs:
           sdkmanager --install "build-tools;36.0.0" || sdkmanager --install "build-tools;35.0.1"  # 🔹 Alternativ versiyani ham tekshirish
           ls -la $ANDROID_SDK_ROOT/build-tools || true
 
+      - name: 🔧 Install Android Build-Tools
+        run: $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;36.0.0"
+
       - name: 🔍 Yangi build-tools katalogini tekshirish
         run: ls -la $ANDROID_SDK_ROOT/build-tools || true
 
