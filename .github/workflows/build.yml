@@ -5,22 +5,22 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # ✅ Ubuntu versiyasini yangiladik
+    runs-on: ubuntu-22.04  # ✅ Ubuntu 22.04 ishlatilmoqda
 
     steps:
       - uses: actions/checkout@v4  # ✅ Yangilangan versiya
-      
+
       - name: Get Date
         id: get-date
-        run: echo "date=$(date -u "+%Y%m%d")" >> "$GITHUB_ENV"  # ✅ Yangi sintaksis
+        run: echo "date=$(date -u "+%Y%m%d")" >> "$GITHUB_ENV"  # ✅ To'g'ri sintaksis
 
       - name: Cache Buildozer global directory
-        uses: actions/cache@v4  # ✅ v2 o‘rniga v4 ishlatyapmiz
+        uses: actions/cache@v4
         with:
           path: .buildozer_global
           key: buildozer-global-${{ hashFiles('buildozer.spec') }}
 
-      - uses: actions/cache@v4  # ✅ v2 ni yangiladik
+      - uses: actions/cache@v4
         with:
           path: .buildozer
           key: ${{ runner.os }}-${{ env.date }}-${{ hashFiles('buildozer.spec') }}
@@ -29,20 +29,21 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y zip unzip openjdk-17-jdk autoconf libtool pkg-config \
-                            zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 cmake \
+                            zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake \
                             libffi-dev libssl-dev
           pip install --upgrade Cython buildozer
         shell: bash
 
       - name: Build with Buildozer
-        uses: digreatbrian/buildozer-action@v2  # ✅ Yangi versiya
+        uses: digreatbrian/buildozer-action@v2
         id: buildozer
         with:
-          command: buildozer android debug
-          buildozer_version: stable
+          work-dir: .
+          python-version: 3.8
+          buildozer-cmd: buildozer android debug  # ✅ `buildozer-cmd` to‘g‘ri ishlatilmoqda
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: package
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk  # ✅ Buildozer odatda `bin/` katalogida APK yaratadi
