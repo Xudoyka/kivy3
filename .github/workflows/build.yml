@@ -8,20 +8,19 @@ jobs:
     runs-on: ubuntu-latest  # ✅ Ubuntu versiyasini yangiladik
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4  # ✅ Yangilangan versiya
       
-      # Used to cache dependencies with a timeout
       - name: Get Date
         id: get-date
-        run: echo "date=$(date -u "+%Y%m%d")" >> "$GITHUB_ENV"  # ✅ set-output o‘rniga yangi sintaksis
+        run: echo "date=$(date -u "+%Y%m%d")" >> "$GITHUB_ENV"  # ✅ Yangi sintaksis
 
       - name: Cache Buildozer global directory
-        uses: actions/cache@v2
+        uses: actions/cache@v4  # ✅ v2 o‘rniga v4 ishlatyapmiz
         with:
           path: .buildozer_global
           key: buildozer-global-${{ hashFiles('buildozer.spec') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4  # ✅ v2 ni yangiladik
         with:
           path: .buildozer
           key: ${{ runner.os }}-${{ env.date }}-${{ hashFiles('buildozer.spec') }}
