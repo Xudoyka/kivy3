@@ -35,7 +35,7 @@ jobs:
         shell: bash
 
       - name: Build with Buildozer
-        uses: digreatbrian/buildozer-action@v2
+        uses: digreatbrian/buildozer-action@v4
         id: buildozer
         with:
           work-dir: .
