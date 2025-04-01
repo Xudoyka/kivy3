@@ -5,37 +5,44 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest  # ✅ Ubuntu versiyasini yangiladik
 
     steps:
       - uses: actions/checkout@v4
       
-      #used to cache dependencies with a timeout
+      # Used to cache dependencies with a timeout
       - name: Get Date
         id: get-date
-        run: |
-          echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-        shell: bash
-      
+        run: echo "date=$(date -u "+%Y%m%d")" >> "$GITHUB_ENV"  # ✅ set-output o‘rniga yangi sintaksis
+
       - name: Cache Buildozer global directory
         uses: actions/cache@v2
         with:
           path: .buildozer_global
-          key: buildozer-global-${{ hashFiles('buildozer.spec') }} # Replace with your path
-      
+          key: buildozer-global-${{ hashFiles('buildozer.spec') }}
+
       - uses: actions/cache@v2
         with:
           path: .buildozer
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
-      
+          key: ${{ runner.os }}-${{ env.date }}-${{ hashFiles('buildozer.spec') }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y zip unzip openjdk-17-jdk autoconf libtool pkg-config \
+                            zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake \
+                            libffi-dev libssl-dev
+          pip install --upgrade Cython buildozer
+        shell: bash
+
       - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
+        uses: digreatbrian/buildozer-action@v2  # ✅ Yangi versiya
         id: buildozer
         with:
           command: buildozer android debug
           buildozer_version: stable
-      
-      - name: Upload artifacts
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: package
