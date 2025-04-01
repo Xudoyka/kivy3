@@ -34,6 +34,11 @@ jobs:
           pip install --upgrade Cython buildozer
         shell: bash
 
+      - name: Install Kivy dependencies
+        run: |
+          pip install kivy_deps.sdl2 kivy_deps.glew kivy_deps.gstreamer
+        shell: bash
+
       - name: Fix requirements.txt
         run: |
           sed -i '/kivy-deps.glew==0.3.1/d' requirements.txt
@@ -44,6 +49,7 @@ jobs:
         run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         shell: bash
+      
 
       - name: Build with Buildozer
         uses: digreatbrian/buildozer-action@v2
