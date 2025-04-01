@@ -34,8 +34,13 @@ jobs:
           pip install --upgrade Cython buildozer
         shell: bash
 
+      - name: Install Python dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        shell: bash
+
       - name: Build with Buildozer
-        uses: digreatbrian/buildozer-action@v4
+        uses: digreatbrian/buildozer-action@v2
         id: buildozer
         with:
           work-dir: .
