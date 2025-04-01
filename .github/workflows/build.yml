@@ -36,7 +36,7 @@ jobs:
 
       - name: Fix requirements.txt
         run: |
-          sed -i '/kivy-deps.angle==0.4.0/d' requirements.txt
+          sed -i '/kivy-deps.glew==0.3.1/d' requirements.txt
         shell: bash
 
       - name: Install Python dependencies
