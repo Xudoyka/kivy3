@@ -28,6 +28,8 @@ jobs:
 
     - name: Install Android SDK
       run: |
+        export ANDROID_HOME=$HOME/android-sdk
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
         rm -rf $HOME/android-sdk/cmdline-tools
         mkdir -p $HOME/android-sdk/cmdline-tools
         
