@@ -9,7 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,8 +26,8 @@ jobs:
       - name: Install required system packages
         run: |
           sudo apt update
-          #sudo apt install -y zip unzip openjdk-17-jdk python3-pip python3-setuptools git libncurses-dev
           sudo apt install -y zip unzip openjdk-17-jdk python3-pip python3-setuptools git libncurses5 || sudo apt install -y libncurses-dev
+
       - name: Download Android SDK Command Line Tools
         run: |
           mkdir -p $HOME/android-sdk/cmdline-tools
@@ -45,22 +44,39 @@ jobs:
       - name: Accept SDK licenses
         run: |
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
-          #yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+
       - name: Install Android SDK packages
         run: |
           $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-33" "build-tools;34.0.0" "build-tools;36.0.0" "aidl"
+
+      - name: Check SDK installation and AIDL
+        run: |
+          # Tekshirish: SDK o'rnatilganmi?
+          if [ -d "$HOME/android-sdk/cmdline-tools/latest" ]; then
+            echo "SDK manzili to'g'ri o'rnatilgan: $HOME/android-sdk/cmdline-tools/latest"
+          else
+            echo "SDK manzili topilmadi"
+            exit 1
+          fi
           
+          # Tekshirish: build-tools mavjudmi?
+          if $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --list | grep "build-tools"; then
+            echo "Build-tools o'rnatilgan."
+          else
+            echo "Build-tools o'rnatilmadi"
+            exit 1
+          fi
 
-      #- name: Initialize Buildozer
-       #run: buildozer init
-
-      - name: Accept Android SDK licenses
-        run: yes | sdkmanager --licenses
+          # Tekshirish: AIDL o'rnatilganmi?
+          if $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --list | grep "aidl"; then
+            echo "AIDL paketi o'rnatilgan."
+          else
+            echo "AIDL paketi o'rnatilmadi"
+            exit 1
+          fi
 
       - name: Build APK
         run: buildozer android debug
-
-
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
