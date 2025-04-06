@@ -16,4 +16,4 @@ android.api = 33
 android.build_tools_version = 34.0.0
 android.minapi = 21
 android.ndk = 23b
-android.sdk_path = /home/runner/android-sdk
+#android.sdk_path = /home/runner/android-sdk
