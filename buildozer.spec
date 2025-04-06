@@ -9,7 +9,7 @@ version = 1.0
 orientation = portrait
 fullscreen = 1
 
-[app]
+
 requirements = python3,kivy,kivymd,pymupdf
 android.permissions = INTERNET
 android.api = 33
