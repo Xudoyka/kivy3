@@ -31,10 +31,15 @@ jobs:
         mkdir -p $HOME/android-sdk/cmdline-tools
         cd $HOME/android-sdk/cmdline-tools
         curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip sdk-tools.zip
-        mv cmdline-tools latest
+        unzip sdk-tools.zip -d latest
+
+        # Fix cmdline-tools structure (important!)
+        mv latest/cmdline-tools cmdline-tools-temp
+        rm -rf latest/*
+        mv cmdline-tools-temp latest/cmdline-tools
+
         export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/cmdline-tools/bin:$PATH
         yes | sdkmanager --licenses
         sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
 
