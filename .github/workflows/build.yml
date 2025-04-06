@@ -28,12 +28,16 @@ jobs:
 
     - name: Install Android SDK
       run: |
+        rm -rf $HOME/android-sdk/cmdline-tools
         mkdir -p $HOME/android-sdk/cmdline-tools
+        
         cd $HOME/android-sdk/cmdline-tools
         curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip sdk-tools.zip -d tmp
+        unzip sdk-tools.zip -d .
+        #unzip sdk-tools.zip -d tmp
         mkdir -p latest
-        mv tmp/cmdline-tools latest/cmdline-tools
+        mv cmdline-tools latest
+        #mv tmp/cmdline-tools latest/cmdline-tools
 
         echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
         echo "$HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin" >> $GITHUB_PATH
@@ -41,21 +45,7 @@ jobs:
 
         yes | $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager --licenses
         $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
-    - name: Install Android SDK
-      run: |
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk/cmdline-tools
-        curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip sdk-tools.zip -d tmp
-        mkdir -p latest
-        mv tmp/cmdline-tools latest/cmdline-tools
-
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "$HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin" >> $GITHUB_PATH
-        echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-
-        yes | $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager --licenses
-        $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
+    
 
 
     - name: Set environment variables
