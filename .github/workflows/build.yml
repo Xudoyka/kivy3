@@ -71,7 +71,7 @@ jobs:
 
       - name: Set SDK path in buildozer.spec
         run: |
-          sed -i '/^# *android.sdk_path/d' buildozer.spec
+          sed -i '/^#\? *android\.sdk_path *=.*/d' buildozer.spec
           echo "android.sdk_path = /home/runner/android-sdk" >> buildozer.spec
 
       - name: Build APK
