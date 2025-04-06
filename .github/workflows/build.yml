@@ -68,6 +68,10 @@ jobs:
             echo "❌ aidl not found in any build-tools version!"
             exit 1
           fi
+      - name: Fix sdkmanager path for Buildozer
+        run: |
+          mkdir -p $ANDROID_SDK_ROOT/tools
+          ln -s $ANDROID_SDK_ROOT/cmdline-tools/latest $ANDROID_SDK_ROOT/tools/cmdline-tools
 
       - name: Set SDK path in buildozer.spec
         run: |
