@@ -10,58 +10,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y zip unzip openjdk-17-jdk python3-pip python3-setuptools python3-wheel
-        pip install --upgrade pip
-        pip install cython
-        pip install buildozer
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install buildozer cython
 
-    - name: Install Android SDK
-      run: |
-        export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        rm -rf $HOME/android-sdk/cmdline-tools
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        
-        cd $HOME/android-sdk/cmdline-tools
-        curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip sdk-tools.zip -d .
-        #unzip sdk-tools.zip -d tmp
-        mkdir -p latest
-        mv cmdline-tools latest
-        #mv tmp/cmdline-tools latest/cmdline-tools
+      - name: Install required system packages
+        run: |
+          sudo apt update
+          sudo apt install -y zip unzip openjdk-17-jdk python3-pip python3-setuptools git libncurses5
 
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "$HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin" >> $GITHUB_PATH
-        echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
+      - name: Download Android SDK Command Line Tools
+        run: |
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q sdk-tools.zip -d $HOME/android-sdk/cmdline-tools
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
 
-        yes | $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager --licenses
-        $HOME/android-sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
-    
+      - name: Set environment variables
+        run: |
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
+
+      - name: Accept SDK licenses
+        run: |
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+
+      - name: Install Android SDK packages
+        run: |
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-33" "build-tools;34.0.0"
+
+      - name: Initialize Buildozer
+        run: buildozer init
+
+      - name: Build APK
+        run: buildozer android debug
 
 
-    - name: Set environment variables
-      run: |
-        echo "PATH=$HOME/android-sdk/platform-tools:$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
 
-    - name: Build APK
-      run: |
-        buildozer android debug
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: havo-posboni-apk
-        path: bin/*.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: havo-posboni-apk
+          path: bin/*.apk
