@@ -1,42 +1,47 @@
-name: CI
+name: Build APK
+
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-22.04  # ✅ Ubuntu 22.04 ishlatilmoqda
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4  # ✅ Yangilangan versiya
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-      - name: Get Date
-        id: get-date
-        run: echo "date=$(date -u "+%Y%m%d")" >> "$GITHUB_ENV"  # ✅ To'g'ri sintaksis
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: Cache Buildozer global directory
-        uses: actions/cache@v4
-        with:
-          path: .buildozer_global
-          key: buildozer-global-${{ hashFiles('buildozer.spec') }}
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y zip unzip openjdk-17-jdk python3-pip python3-setuptools python3-wheel
+        pip install --upgrade pip
+        pip install buildozer cython
 
-      - uses: actions/cache@v4
-        with:
-          path: .buildozer
-          key: ${{ runner.os }}-${{ env.date }}-${{ hashFiles('buildozer.spec') }}
+    - name: Accept Android SDK licenses
+      run: |
+        mkdir -p ~/.android
+        echo "### User Agreements" > ~/.android/repositories.cfg
+        yes | buildozer android accept-licenses
 
-      
+    - name: Initialize buildozer
+      run: |
+        if [ ! -f buildozer.spec ]; then
+          buildozer init
+        fi
 
-      - name: Build with Buildozer
-        uses: digreatbrian/buildozer-action@v2
-        id: buildozer
-        with:
-          work-dir: .
-          python-version: 3.8
-          buildozer-cmd: buildozer android debug  # ✅ `buildozer-cmd` to‘g‘ri ishlatilmoqda
+    - name: Build APK
+      run: buildozer android debug
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: package
-          path: bin/*.apk  # ✅ Buildozer odatda `bin/` katalogida APK yaratadi
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: havo-posboni-apk
+        path: bin/*.apk
