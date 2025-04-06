@@ -71,7 +71,7 @@ jobs:
       - name: Fix sdkmanager path for Buildozer
         run: |
           mkdir -p $ANDROID_SDK_ROOT/tools
-          ln -s $ANDROID_SDK_ROOT/cmdline-tools/latest $ANDROID_SDK_ROOT/tools/cmdline-tools
+          ln -s $ANDROID_SDK_ROOT/cmdline-tools/latest/bin $ANDROID_SDK_ROOT/tools/bin
 
       - name: Set SDK path in buildozer.spec
         run: |
