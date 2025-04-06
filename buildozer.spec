@@ -3,15 +3,11 @@ title = HavoPosboni
 package.name = havo_posboni
 package.domain = org.example
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,pdf
+source.include_exts = py,png,pdf,kv
 icon.filename = icon.png
 version = 1.0
 orientation = portrait
 fullscreen = 1
-
-[buildozer]
-log_level = 2
-warn_on_root = 1
 
 [app]
 requirements = python3,kivy,kivymd,pymupdf
