@@ -45,11 +45,9 @@ jobs:
         run: |
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
 
-      - name: Install Android SDK components
+      - name: Install Android SDK packages
         run: |
-          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk \
-          "platform-tools" "platforms;android-33" "build-tools;34.0.0" "aidl"
-
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-33" "build-tools;34.0.0" "build-tools;36.0.0"
       - name: Verify SDK and AIDL installation
         run: |
           echo "Checking build-tools..."
@@ -69,12 +67,11 @@ jobs:
             echo "❌ aidl not found in any build-tools version!"
             exit 1
           fi
-  
-      - name: Fix Buildozer cmdline-tools structure
+      - name: Fix sdkmanager path for Buildozer
         run: |
-          mkdir -p $ANDROID_SDK_ROOT/tools/cmdline-tools
-          mv $ANDROID_SDK_ROOT/cmdline-tools/latest $ANDROID_SDK_ROOT/tools/cmdline-tools/latest
-  
+          mkdir -p $ANDROID_SDK_ROOT/tools
+          ln -s $ANDROID_SDK_ROOT/cmdline-tools/latest/bin $ANDROID_SDK_ROOT/tools/bin
+
       - name: Set SDK path in buildozer.spec
         run: |
           sed -i '/^#\? *android\.sdk_path *=.*/d' buildozer.spec
