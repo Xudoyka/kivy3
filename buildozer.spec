@@ -18,5 +18,9 @@ android.build_tools_version = 34.0.0
 # Internet kerak bo‘lmasa:
 android.permissions = 
 
+[buildozer]
+log_level = 2
+warn_on_root = 1
+
 # .py faylingiz
 entrypoint = main.py
