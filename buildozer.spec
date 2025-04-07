@@ -1,19 +1,26 @@
 [app]
+
 title = HavoPosboni
 package.name = havo_posboni
-package.domain = org.example
+package.domain = org.havo.posboni
 source.dir = .
-source.include_exts = py,png,pdf,kv
-icon.filename = icon.png
+source.include_exts = py,png,jpg,kv,atlas,pdf
 version = 1.0
+icon.filename = icon.png
 orientation = portrait
+
+# Window yo‘q, chunki bu Android ilova
 fullscreen = 1
 
+# Requirements
+requirements = python3,kivy,kivymd,PyMuPDF
 
-requirements = python3,kivy,kivymd,pymupdf
-android.permissions = INTERNET
+# Android sozlamalari
+android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 android.api = 33
-android.build_tools_version = 34.0.0
 android.minapi = 21
-android.ndk = 23b
-android.sdk_path = /home/runner/android-sdk
+android.ndk = 25b
+android.gradle_dependencies = com.android.support:appcompat-v7:28.0.0
+
+# Logcat uchun
+log_level = 2
