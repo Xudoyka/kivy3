@@ -1,41 +1,27 @@
-name: Build APK
+name: Build Kivy APK with Docker
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  pull_request:
 
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
+    - name: Repozitoriyani yuklab olish
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Docker konteynerda Buildozer orqali APK yaratish
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/app \
+          kivy/buildozer:latest \
+          bash -c "cd /app && buildozer android debug"
 
-      - name: Install system dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y zip unzip openjdk-17-jdk python3-pip git
-
-      - name: Install Buildozer
-        run: |
-          pip install --upgrade pip
-          pip install buildozer cython
-
-      - name: Build APK
-        run: |
-          buildozer appclean
-          buildozer android debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: havo_posboni-apk
-          path: bin/*.apk
+    - name: Natijani yuklash
+      uses: actions/upload-artifact@v4
+      with:
+        name: kivy-apk
+        path: bin/*.apk
