@@ -1,27 +1,22 @@
+# buildozer.spec faylining asosiy qismi
 [app]
-
 title = HavoPosboni
 package.name = havo_posboni
-package.domain = org.havo.posboni
+package.domain = org.example
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,pdf
+source.include_exts = py,png,kv,jpg,atlas,pdf
 version = 1.0
 icon.filename = icon.png
+requirements = python3,kivy,kivymd,pymupdf
 orientation = portrait
-
-# Window yo‘q, chunki bu Android ilova
 fullscreen = 1
-
-# Requirements
-requirements = python3,kivy,kivymd,PyMuPDF
-
-# Android sozlamalari
-android.build_tools = 34.0.0
-android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 android.api = 33
 android.minapi = 21
-android.ndk = 25b
-android.gradle_dependencies = com.android.support:appcompat-v7:28.0.0
+android.ndk = 23b
+android.ndk_api = 21
+android.build_tools_version = 34.0.0
+# Internet kerak bo‘lmasa:
+android.permissions = 
 
-# Logcat uchun
-log_level = 2
+# .py faylingiz
+entrypoint = main.py
