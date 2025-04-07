@@ -16,6 +16,7 @@ fullscreen = 1
 requirements = python3,kivy,kivymd,PyMuPDF
 
 # Android sozlamalari
+android.build_tools = 34.0.0
 android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 android.api = 33
 android.minapi = 21
