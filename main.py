@@ -29,7 +29,7 @@ from threading import Thread
 
 class StartScreen(Screen):
     def on_pre_enter(self):
-        Window.size = (540, 360)  # ✅ StartScreen uchun o'lcham
+        Window.size = (400, 400)  # ✅ StartScreen uchun o'lcham
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = FloatLayout()
@@ -42,7 +42,7 @@ class StartScreen(Screen):
         self.bind(pos=self.update_rect, size=self.update_rect)
 
         # 🔹 **Fon rasmi**
-        bg = Image(source='wing6.jpg', size_hint=(1, 1))
+        bg = Image(source='uav2.jpg', size_hint=(1, 1))
         layout.add_widget(bg)
 
         # 🔹 **"Keyingi ekran" tugmasi**
@@ -51,7 +51,7 @@ class StartScreen(Screen):
             font_size="40sp",
             size_hint=(None, None),
             size=(300, 80),
-            pos_hint={"center_x": 0.7, "center_y": 0.7},
+            pos_hint={"center_x": 0.5, "center_y": 0.045},
             background_color=(0, 0, 0, 0),
             color=(0, 0, 1, 1)
         )
