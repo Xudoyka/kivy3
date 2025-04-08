@@ -13,13 +13,13 @@ jobs:
       - name: Docker imijini tortish
         run: docker pull ghcr.io/kivy/buildozer:latest
 
-      - name: APK build qilish
+      - name: Docker orqali APK build qilish
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/app \
             -w /app \
             ghcr.io/kivy/buildozer:latest \
-            /bin/bash -c "buildozer -v android debug"
+            /bin/sh -c "buildozer -v android debug"
 
       - name: APK faylini yuklash
         uses: actions/upload-artifact@v4
