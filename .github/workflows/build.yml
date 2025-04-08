@@ -12,18 +12,14 @@ jobs:
 
       - name: Docker orqali APK build qilish
         run: |
-          # Docker image-ni yuklab olish
-          docker pull ghcr.io/kivy/buildozer:latest
-
-          # Docker konteynerini ishga tushirib, buildozer versiyasini tekshirish
-          docker run --rm -v ${{ github.workspace }}:/app -w /app ghcr.io/kivy/buildozer:latest sh -c "
-            # Buildozer versiyasini tekshirish
+          docker run -it --rm -v ${{ github.workspace }}:/app -w /app ghcr.io/kivy/buildozer:latest bash
+          
+      - name: Buildozer versiyasini tekshirish va bajarish
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/app -w /app ghcr.io/kivy/buildozer:latest bash -c "
             buildozer --version
-            # $PATH o'zgaruvchisini tekshirish
             echo \$PATH
-            # Buildozerning to'g'ri o'rnatilganligini tekshirish
             which buildozer
-            # Buildozer komandasini ishga tushurish
             buildozer -v android debug
           "
 
