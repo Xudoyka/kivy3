@@ -10,6 +10,9 @@ jobs:
       - name: Reponi yuklash
         uses: actions/checkout@v3
 
+      - name: Docker tasvirini yuklash
+        run: docker pull ghcr.io/kivy/buildozer:latest
+
       - name: Buildozer versiyasini tekshirish va bajarish
         run: |
           docker run --rm -v ${{ github.workspace }}:/app -w /app ghcr.io/kivy/buildozer:latest bash -c "
