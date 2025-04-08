@@ -12,9 +12,11 @@ jobs:
 
       - name: Docker orqali APK build qilish
         run: |
-          docker run --rm -v ${{ github.workspace }}:/app \
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
             ghcr.io/kivy/buildozer:latest \
-            /bin/sh -c "cd /app && buildozer -v android debug"
+            buildozer -v android debug
 
       - name: APK faylini yuklash
         uses: actions/upload-artifact@v4
